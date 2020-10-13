@@ -1,0 +1,298 @@
+===========================DSL==============================================================================================
+
+job('job_dsl_example') {
+ description('This is my awesome Job')
+}
+job('job_dsl_example') {
+    description('This is my awesome job')
+
+    parameters {
+        stringParam('planet', defaultValue = 'world', description = 'This is the world')
+        booleanParam('FLAG', true)
+        choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+    }
+}
+
+=============================================================================================================================
+job('job_dsl_example') {
+    description('This is my awesome job')
+
+    parameters {
+        stringParam('planet', defaultValue = 'world', description = 'This is the world')
+        booleanParam('FLAG', true)
+        choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+    }
+
+
+    scm {
+        git('https://github.com/advkdp/simple-java-maven-app', 'master')
+    }
+
+}
+
+=============================================================================================================================
+
+job('job_dsl_example') {
+    description('This is my awesome job')
+
+    parameters {
+        stringParam('planet', defaultValue = 'world', description = 'This is the world')
+        booleanParam('FLAG', true)
+        choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+    }
+
+
+    scm {
+        git('https://github.com/advkdp/simple-java-maven-app', 'master')
+    }
+
+
+    triggers {
+        cron('H 5 * * 7')
+    }
+
+    steps {
+        shell("echo HELLO WORLD!!")
+    }
+
+}
+
+===========================================================================================================================
+
+job('job_dsl_example') {
+    description('This is my awesome job')
+
+    parameters {
+        stringParam('planet', defaultValue = 'world', description = 'This is the world')
+        booleanParam('FLAG', true)
+        choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+    }
+
+
+    scm {
+        git('https://github.com/advkdp/simple-java-maven-app', 'master')
+    }
+
+
+    triggers {
+        cron('H 5 * * 7')
+    }
+
+    steps {
+        shell("""
+                   echo 'HELLO WORLD!!'
+                   echo 'Running Script'
+                   /tmp/script.sh
+              """
+        )
+    }
+
+}
+
+==============================================================================================================================
+
+job('job_dsl_example') {
+    description('This is my awesome job')
+
+    parameters {
+        stringParam('planet', defaultValue = 'world', description = 'This is the world')
+        booleanParam('FLAG', true)
+        choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+    }
+
+
+    scm {
+        git('https://github.com/advkdp/simple-java-maven-app', 'master')
+    }
+
+
+    triggers {
+        cron('H 5 * * 7')
+    }
+
+}
+
+=============================================DSL-END========================================================================
+
+=============================DeclarativePipeline===========================================================================
+
+=============================First-Pipeline================================================================================
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying..'
+            }
+        }
+    }
+}
+
+===========================Pipeline-Build====================================================================================
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "My First Pipeline"'
+		sh '''
+		   echo "can do more stuff here"
+		   ls -lah
+                   ''' 
+            }
+        }
+    }
+}    
+
+
+===========================Pipeline-Retry==================================================================================
+pipeline {
+    agent any
+
+    stages {
+        stage('Timeout') {
+            steps {
+                retry(3) {
+		    sh 'I am not going to write :c'
+                }		   
+            }
+        }
+    }
+}
+
+================================================================================================================================
+pipeline {
+    agent any
+
+    stages {
+        stage('Timeout') {
+            steps {
+                retry(3) {
+		            sh 'I am not going to write :c'
+                }		   
+            }
+        }
+    }
+}
+
+=========================================Pipeline-timeout=========================================================================
+pipeline {
+    agent any
+
+    stages {
+        stage('Timeout') {
+            steps {
+                retry(3) {
+		    sh 'echo Hello'
+                }
+		timeout(time: 3, unit: 'SECONDS') {
+		    sh 'sleep 5'
+		}
+            }
+        }
+    }
+}
+
+=================================================pipeline-environment============================================================
+pipeline {
+    agent any
+    
+    environment {
+        NAME = 'BADAL'
+	LASTNAME = 'KODAPE'
+    }	
+    
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Hello" $NAME $LASTNAME'               
+            }
+        }
+    }
+}
+
+=================================================pipeline-credentials============================================================
+pipeline {
+    agent any
+    
+    environment {
+        secret = credentials('SECRET_TEXT')
+    }
+
+    stages {
+        stage('Example stage 1') {
+	    steps {
+	        sh 'echo $secret'
+            }
+	}
+    }
+}
+=====================================================Post-Actions================================================================
+
+pipeline {
+    agent any 
+    stages {
+        stage('Test') {
+	    steps {
+	        sh 'echo "FAIL!"; exit1'
+            }
+	}
+    }
+    post {
+        always {
+	    echo 'i will always executed :D'
+        }
+        success {
+	    echo 'i will always executed if this success'
+        }
+	failure {
+	    echo 'i will always executed if this fail'
+        }
+	unstable {
+	    echo 'i will always executed if this unstable'
+        }
+    }
+}
+
+===========================================================================================================================
+
+pipeline {
+    agent any 
+    stages {
+        stage('Test') {
+	    steps {
+	        sh 'echo I am Good'
+            }
+	}
+    }
+    post {
+        always {
+	    echo 'i will always executed :D'
+        }
+        success {
+	    echo 'i will always executed if this success'
+        }
+	failure {
+	    echo 'i will always executed if this fail'
+        }
+	unstable {
+	    echo 'i will always executed if this unstable'
+        }
+    }
+}
+
+==========================================================================================================================
